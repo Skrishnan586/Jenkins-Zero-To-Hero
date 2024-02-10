@@ -50,12 +50,6 @@ pipeline {
         GIT_REPO_NAME = "Jenkins-Zero-To-Hero"
         GIT_USER_NAME = "Skrishnan586"
       }
-      steps {
-        stage('Approval - Deploy KOPS'){
-          steps {
-            input 'Approve for KOPS Deploy'
-          }
-        }
         script {
           withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
             sh """
@@ -70,6 +64,10 @@ pipeline {
           }
         }
       }
+      stage('Approval - Deploy KOPS'){
+          steps {
+            input 'Approve for KOPS Deploy'
+          }
+        }
     }
   }
-}
