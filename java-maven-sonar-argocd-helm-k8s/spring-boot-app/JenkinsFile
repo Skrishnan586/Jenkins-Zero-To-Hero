@@ -22,22 +22,24 @@ pipeline {
     stage('Build and Push Docker Image') {
       environment {
         DOCKER_IMAGE = "harikrishnan586/ultimate-cicd:${BUILD_NUMBER}"
-        // DOCKERFILE_LOCATION = "java-maven-sonar-argocd-helm-k8s/spring-boot-app/Dockerfile"
+        LATEST_DOCKER_IMAGE = "harikrishnan586/ultimate-cicd:latest" // Adding the latest tag
       }
       steps {
         script {
           sh "cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && docker build -t ${DOCKER_IMAGE} ."
           def dockerImage = docker.image("${DOCKER_IMAGE}")
           dockerImage.push()
+          dockerImage.tag(LATEST_DOCKER_IMAGE) // Tagging the image with latest tag
+          dockerImage.push(LATEST_DOCKER_IMAGE) // Pushing the image with latest tag
         }
       }
     }
-      stage('Approval - Deploy EKS'){
-            steps {
-                input 'Approve for EKS Deploy'
-            }
-        }
-      stage('Update Deployment File') {
+    stage('Approval - Deploy EKS') {
+      steps {
+        input 'Approve for EKS Deploy'
+      }
+    }
+    stage('Update Deployment File') {
       environment {
         GIT_REPO_NAME = "Jenkins-Zero-To-Hero"
         GIT_USER_NAME = "Skrishnan586"
